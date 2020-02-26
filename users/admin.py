@@ -1,0 +1,27 @@
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from . import models  
+#현재의 파일과 같은 폴더에 있는 models
+
+# Register your models here.
+@admin.register(models.User)
+class CustomUserAdmin(UserAdmin):
+
+    fieldsets = UserAdmin.fieldsets + (
+        (
+            "Custom Profile",
+            {
+                "fields":(
+                    "avatar",
+                    "gender",
+                    "bio",
+                    "language",
+                    "currency",
+                    "superhost",
+                )
+            }
+        ),
+    )     
+
+    # list_display = ("username", "superhost", "currency", "language", "gender")
+    # list_filter = ("superhost", "currency", "language")
