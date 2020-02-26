@@ -11,7 +11,7 @@ class AbstractItem(core_models.TimeStampModel):
       class Meta:
             abstract = True
       
-      def __str__(self):
+      def __str__(self):  #__str__함수는 admin에 표기될 이름을 지정하는 것이다. 
             return self.name
 
 class RoomType(AbstractItem):
