@@ -65,11 +65,12 @@ class Room(core_models.TimeStampModel):
       address = models.CharField(max_length=140)
       beds = models.IntegerField()
       baths = models.IntegerField()
+      # bedrooms = models.IntegerField()
       guests = models.IntegerField()
       check_in = models.TimeField()
       check_out = models.TimeField()
       instant_book = models.BooleanField(default=False)
-      host = models.ForeignKey("users.User", on_delete=models.CASCADE)
+      host = models.ForeignKey("users.User", on_delete=models.CASCADE, null = True)
 
       #on_delete=models.CASCADE : user가 삭되되면 user의 모든 정보를 삭제하는 기능
       room_type = models.ForeignKey("RoomType", on_delete=models.SET_NULL, null=True)
