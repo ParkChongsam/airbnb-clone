@@ -13,9 +13,9 @@ class Review(core_models.TimeStampModel):
       location = models.IntegerField()
       check_in = models.IntegerField()
       value = models.IntegerField()
-      user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+      user = models.ForeignKey("users.User", related_name = "reviews", on_delete=models.CASCADE)
       #user는 users 앱의 User를 가리켜야 한다. 
-      room = models.ForeignKey("rooms.Room" , on_delete=models.CASCADE)
+      room = models.ForeignKey("rooms.Room", related_name = "reviews", on_delete=models.CASCADE)
       #views의 room은 rooms앱의 Room을 가리키는 것이다. 
 
       def __str__(self):
@@ -30,8 +30,19 @@ class Review(core_models.TimeStampModel):
                     #위처럼 formating 방법을 사용해서 표시할 수도 있다.
                     #위처럼 return을 적용하면 park.review_set.all()의 값은
                     #return의 값으로 출력된다. 
-                    
-                    
+
+      def rating_average(self):
+            avg =(
+                self.accuracy
+                + self.communication
+                + self.cleanliness
+                + self.location
+                + self.check_in
+                + self.value
+            )/6
+            return round(avg, 2)   
+
+      rating_average.short_description = "AVG." #단축표현으로 출력되게 함. 
 
 
 

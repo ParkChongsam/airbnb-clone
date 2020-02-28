@@ -4,7 +4,16 @@ from . import models
 @admin.register(models.RoomType, models.Facility, models.HouseRule, models.Amenity)
 class ItemAdmin(admin.ModelAdmin):
       """ Item Admin Definition"""
-      pass
+
+      list_display = ("name", "used_by") 
+      #여기서 name은 위의 항목들의 공통변수이다. 
+      # models에서 추상클래스에서 정의된것임. 그것을 상속받은것은 전부 name을 공용한다.
+
+
+      def used_by(self, obj):
+            return obj.rooms.count()
+            #여기서 rooms는 models에서 related_name을 roons로 해준 모든것들(facitities
+            # ,amenities, host, room_type, house_rule)을 가리킨다.
 
 @admin.register(models.Room)
 class RoomAdmin(admin.ModelAdmin):
@@ -21,6 +30,8 @@ class RoomAdmin(admin.ModelAdmin):
       )
       # readonly_fields=("bedrooms",)
 
+
+
       list_display = (
           "name",
           "description",
@@ -34,7 +45,10 @@ class RoomAdmin(admin.ModelAdmin):
           "check_out",
           "instant_book",
           "count_ammenities",
+          "count_photos",
+          "total_rating",
       )
+
 
       # ordering = ("name","price","beds","baths") #정렬순서 정하기
 
@@ -67,6 +81,8 @@ class RoomAdmin(admin.ModelAdmin):
             #그리고 obj는 rooms의 하나의 객체를 받는다.
             # print(obj.amenties.all())
             return obj.amenties.count()
+      def count_photos(self, obj):
+            return obj.photos.count()
 
       count_ammenities.short_description = "hello sexy!"
       #count_ammenities를 다른 이름으로 표기되게 하기.

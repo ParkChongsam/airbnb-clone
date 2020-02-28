@@ -46,7 +46,7 @@ class Photo(core_models.TimeStampModel):
 
       caption = models.CharField(max_length=80)
       file = models.ImageField()
-      room = models.ForeignKey("Room", on_delete=models.CASCADE)
+      room = models.ForeignKey("Room", related_name= "photos", on_delete=models.CASCADE)
       #room을 삭제하면 사진도 삭제 되어야함.(on_delete=models.CASCADE)
       #사진을 방과 연결시키는 코드임.
 
@@ -71,17 +71,42 @@ class Room(core_models.TimeStampModel):
       check_out = models.TimeField()
       instant_book = models.BooleanField(default=False)
       host = models.ForeignKey("users.User", related_name = "rooms", on_delete=models.CASCADE)
-      #_set을 related_name으로 지정해주면 >>예)park.room_set.all()아 아니고
+      #_set을 related_name으로 지정해주면 >>예)park.room_set.all() 아니고
       #park.rooms.all()로 명령할 수 있다 _set기능을 realted_name을 사용하여 별칭해준다.
       #on_delete=models.CASCADE : user가 삭되되면 user의 모든 정보를 삭제하는 기능
-      room_type = models.ForeignKey("RoomType", on_delete=models.SET_NULL, null=True)
-      amenties = models.ManyToManyField("Amenity", blank=True)
-      facilities = models.ManyToManyField("Facility", blank=True)
-      house_rules = models.ManyToManyField("HouseRule", blank=True)
 
+      # host가 Foreignkey로 user를 가리키고 있기 때문에 user는 room_set 엘리먼트를 가지며
+      # 마찬가지로 Review의 user변수가 ForeignKey로 User를 가리키고 있기 때문에
+      # user는 또한 review_set 엘리먼트(매서드)를 가지고 있다
+
+      room_type = models.ForeignKey("RoomType", related_name = "rooms", on_delete=models.SET_NULL, null=True)
+      amenties = models.ManyToManyField("Amenity", related_name = "rooms", blank=True)
+      facilities = models.ManyToManyField("Facility", related_name = "rooms", blank=True)
+      house_rules = models.ManyToManyField("HouseRule", related_name = "rooms", blank=True)
+      
+      #ManyToMany키는 다음과 같이 사용가능 하다. 
+      # room = Room.objects.get(id=1) #id가 1인 방을 객체로 만들어준다.
+      # room.amenties.all()
 
       def __str__(self):
             return self.name
+
+      # def total_rating(self):
+      #       all_reviews = self.reviews.all() #여기서 reviews는 related_set의 reviews이다.
+      #       for review in all_reviews:
+      #           print(review.rating_average())
+      #       return 0
+
+      def total_rating(self): 
+            all_reviews = self.reviews.all()
+            all_ratings = 0
+            for review in all_reviews:
+                all_ratings += review.rating_average()
+            
+            if len(all_reviews)  == 0:
+                  return 0
+            else: 
+                  return all_ratings / len(all_reviews)
                 
 
 
