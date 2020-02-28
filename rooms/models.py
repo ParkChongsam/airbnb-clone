@@ -65,13 +65,14 @@ class Room(core_models.TimeStampModel):
       address = models.CharField(max_length=140)
       beds = models.IntegerField()
       baths = models.IntegerField()
-      # bedrooms = models.IntegerField()
+      # bedr]5ooms = models.IntegerField()
       guests = models.IntegerField()
       check_in = models.TimeField()
       check_out = models.TimeField()
       instant_book = models.BooleanField(default=False)
-      host = models.ForeignKey("users.User", on_delete=models.CASCADE, null = True)
-
+      host = models.ForeignKey("users.User", related_name = "rooms", on_delete=models.CASCADE)
+      #_set을 related_name으로 지정해주면 >>예)park.room_set.all()아 아니고
+      #park.rooms.all()로 명령할 수 있다 _set기능을 realted_name을 사용하여 별칭해준다.
       #on_delete=models.CASCADE : user가 삭되되면 user의 모든 정보를 삭제하는 기능
       room_type = models.ForeignKey("RoomType", on_delete=models.SET_NULL, null=True)
       amenties = models.ManyToManyField("Amenity", blank=True)

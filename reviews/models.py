@@ -21,13 +21,16 @@ class Review(core_models.TimeStampModel):
       def __str__(self):
                   #   return self.room.host.username
                      #현재의 모델의 room에서 rooms.Room으로 가서 다시
-                     #Room의 host에서 users앱 model의 username을 호출하여 
+                     #Room의 host에서 users앱 model의 username(장고에서 자동생성됨)을 호출하여 
                      #관리자 페이지에 표시해주는 방법임.
 
 
 
                     return f"{self.review} - {self.room}"
                     #위처럼 formating 방법을 사용해서 표시할 수도 있다.
+                    #위처럼 return을 적용하면 park.review_set.all()의 값은
+                    #return의 값으로 출력된다. 
+                    
                     
 
 
