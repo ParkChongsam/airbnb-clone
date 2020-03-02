@@ -133,3 +133,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'users.User'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "uploads") 
+#사진들이 저장될 uploads폴더가 생성됨
+
+# MEDIA_URL = "/media/" 
+#실제 보여질 url(media)를 정의함. 
+#MEDIA_URL = "/media/"에서 처럼 media/앞에 /를 써주면 절대경로로 바뀐다
+#http://127.0.0.1:8000/admin/rooms/photo/4/change/media/room_photos/nod.png
+#이처럼 못생겼던 경로가 절대경로로 바뀐다. 앞쪽에 / 하나를 써줌으로써
+#그래서 경로가 루트 디렉토리 다음으로 써진다 http://127.0.0.1:8000/media/room_photos/nod.png

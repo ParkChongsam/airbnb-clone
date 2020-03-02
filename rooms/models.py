@@ -45,7 +45,8 @@ class HouseRule(AbstractItem):
 class Photo(core_models.TimeStampModel):
 
       caption = models.CharField(max_length=80)
-      file = models.ImageField()
+      file = models.ImageField(upload_to='room_photos')
+      #uploads폴더내에서 room_photos 폴더를 만들어서 거기에 사진을 저장한다.
       room = models.ForeignKey("Room", related_name= "photos", on_delete=models.CASCADE)
       #room을 삭제하면 사진도 삭제 되어야함.(on_delete=models.CASCADE)
       #사진을 방과 연결시키는 코드임.

@@ -28,7 +28,8 @@ class User(AbstractUser):
 
     CURRENCY_CHOICES = ((CURRENCY_USD, "usd"), (CURRENCY_KRW, "krw"))
 
-    avatar = models.ImageField(null=True, blank=True)
+    avatar = models.ImageField(upload_to = "avatars",null=True, blank=True)
+    #uploads폴더내에서 avatar폴더를 만들어서 거기에 사진을 저장한다. 
     gender = models.CharField(
         choices=GENDER_CHOICES, max_length=10, null=True, blank=True)
     bio = models.TextField(default="", blank=True)
