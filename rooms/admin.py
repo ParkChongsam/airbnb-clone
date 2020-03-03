@@ -32,7 +32,7 @@ class RoomAdmin(admin.ModelAdmin):
       inlines = (PhotoInline, )
 
       fieldsets = (
-            ("Basic Info", {"fields" : ("name", "description", "country", "address", "price")}),
+            ("Basic Info", {"fields" : ("name", "description", "country", "city", "address", "price")}),
             ("Times", {"fields" : ("check_in", "check_out","instant_book")}),
             ("More About the Space", {"fields" : ("amenties", "facilities", "house_rules")}),
             ("Spaces", {"fields" : ("beds", "guests","baths")}),
@@ -104,6 +104,14 @@ class RoomAdmin(admin.ModelAdmin):
       #여기서 특정이름을 정하고 그것을 list_filter에 넣고 그것의
       # 반환값을 우리가 원하는 값으로 정할 수 있다 함수를 사용하여.
       #그 특정이름을 가진 함수를 만들어 사용한다.
+
+      # def save_model(self, request, obj, form, change):
+      #       print(obj, change, form)
+      #       # obj.user = request.user
+      #       super().save_model(request, obj, form, change)
+
+      #위 코드는 admin을 좀더 컨트롤 할 수 있는 함수.
+      # super()매서드를 불러오는것을 잊지 말라 
 
 @admin.register(models.Photo)
 class PhotoAdmin(admin.ModelAdmin):

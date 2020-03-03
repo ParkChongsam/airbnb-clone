@@ -134,10 +134,11 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'users.User'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "uploads") 
-#사진들이 저장될 uploads폴더가 생성됨
+MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
+# #사진들이 저장될 uploads폴더가 생성됨
 
-# MEDIA_URL = "/media/" 
+MEDIA_URL = "/media/"
+
 #실제 보여질 url(media)를 정의함. 
 #MEDIA_URL = "/media/"에서 처럼 media/앞에 /를 써주면 절대경로로 바뀐다
 #http://127.0.0.1:8000/admin/rooms/photo/4/change/media/room_photos/nod.png

@@ -22,8 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
-# if settings.DEBUG:
-#             urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+            urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 #바로 위는 첨부사진을 클릭했을때 보여지게 하는 방법임.
 #위에서 static을 import해주어야함.

@@ -91,6 +91,15 @@ class Room(core_models.TimeStampModel):
 
       def __str__(self):
             return self.name
+      
+      def save(self, *args, **kwargs):
+            self.city = str.capitalize(self.city) #city의 첫글자를 대문자로 바꾸어준다
+            # self.city = "potato" #city에 어떤것을 입력한던간테 potato가 보여진다.
+            super().save(*args, **kwargs) #save()함수를 override함
+      #https://docs.djangoproject.com/en/3.0/topics/db/models/
+      #위 함수는 super()매서드로 상위클래스나 현재의 클래스를 상속받는 매서드임.
+      #결국 현재의 save함수로 city를 지정된 값으로 보여지게 한다. 
+      #저장버튼을 눌렀을때 적용되는 함수다.
 
       # def total_rating(self):
       #       all_reviews = self.reviews.all() #여기서 reviews는 related_set의 reviews이다.
