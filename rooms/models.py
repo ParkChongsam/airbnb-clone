@@ -81,7 +81,7 @@ class Room(core_models.TimeStampModel):
       # user는 또한 review_set 엘리먼트(매서드)를 가지고 있다
 
       room_type = models.ForeignKey("RoomType", related_name = "rooms", on_delete=models.SET_NULL, null=True)
-      amenties = models.ManyToManyField("Amenity", related_name = "rooms", blank=True)
+      amenities = models.ManyToManyField("Amenity", related_name = "rooms", blank=True)
       facilities = models.ManyToManyField("Facility", related_name = "rooms", blank=True)
       house_rules = models.ManyToManyField("HouseRule", related_name = "rooms", blank=True)
       
@@ -95,7 +95,10 @@ class Room(core_models.TimeStampModel):
       def save(self, *args, **kwargs):
             self.city = str.capitalize(self.city) #city의 첫글자를 대문자로 바꾸어준다
             # self.city = "potato" #city에 어떤것을 입력한던간테 potato가 보여진다.
-            super().save(*args, **kwargs) #save()함수를 override함
+            super().save(*args, **kwargs) #부모클래스의 save()함수를 override함
+            #여기서는 부모의 부보클래스에 save()함수가 있음.
+            #부모클래스의 save()는 저장할때만다 바뀐 함수(여기서는 city명의 앞글자를 대문자로)
+            #를 적용하여 저장하라는 매서드임.
       #https://docs.djangoproject.com/en/3.0/topics/db/models/
       #위 함수는 super()매서드로 상위클래스나 현재의 클래스를 상속받는 매서드임.
       #결국 현재의 save함수로 city를 지정된 값으로 보여지게 한다. 
@@ -110,13 +113,21 @@ class Room(core_models.TimeStampModel):
       def total_rating(self): 
             all_reviews = self.reviews.all()
             all_ratings = 0
-            for review in all_reviews:
-                all_ratings += review.rating_average()
+
+            if len(all_reviews) > 0:
+                  for review in all_reviews:
+                        all_ratings += review.rating_average()
+                  return round(all_ratings / len(all_reviews), 2)
+            return 0
+
             
-            if len(all_reviews)  == 0:
-                  return 0
-            else: 
-                  return all_ratings / len(all_reviews)
+            # for review in all_reviews:
+            #     all_ratings += review.rating_average()
+            
+            # if len(all_reviews)  == 0:
+            #       return 0
+            # else: 
+            #       return all_ratings / len(all_reviews)
                 
 
 

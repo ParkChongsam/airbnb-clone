@@ -32,9 +32,9 @@ class RoomAdmin(admin.ModelAdmin):
       inlines = (PhotoInline, )
 
       fieldsets = (
-            ("Basic Info", {"fields" : ("name", "description", "country", "city", "address", "price")}),
+            ("Basic Info", {"fields" : ("name", "description", "country", "city", "address", "price", "room_type")}),
             ("Times", {"fields" : ("check_in", "check_out","instant_book")}),
-            ("More About the Space", {"fields" : ("amenties", "facilities", "house_rules")}),
+            ("More About the Space", {"fields" : ("amenities", "facilities", "house_rules")}),
             ("Spaces", {"fields" : ("beds", "guests","baths")}),
             ("Last Details", {"fields" : ("host",)}),
 
@@ -57,7 +57,7 @@ class RoomAdmin(admin.ModelAdmin):
           "instant_book",
           "count_ammenities",
           "count_photos",
-      #     "total_rating",
+          "total_rating",
       )
 
 
@@ -68,7 +68,7 @@ class RoomAdmin(admin.ModelAdmin):
             "host__superhost",
             "host__gender",
             "room_type",
-            "amenties",
+            "amenities",
             "city",
             "facilities",
             "house_rules",
@@ -76,7 +76,7 @@ class RoomAdmin(admin.ModelAdmin):
             )
       #filter bar만들기 위에서 써준 순서대로 filter bar가 생긴다.
 
-      filter_horizontal = ("amenties", "facilities", "house_rules")
+      filter_horizontal = ("amenities", "facilities", "house_rules")
 
       #우측으로 옵션을 선택하는 방법
 
@@ -94,11 +94,13 @@ class RoomAdmin(admin.ModelAdmin):
 
             #그리고 obj는 rooms의 하나의 객체를 받는다.
             # print(obj.amenties.all())
-            return obj.amenties.count()
+            return obj.amenities.count()
       def count_photos(self, obj):
             return obj.photos.count()
 
-      count_ammenities.short_description = "hello sexy!"
+      count_photos.short_description = "Photo Count"
+
+      # count_ammenities.short_description = "hello sexy!"
       #count_ammenities를 다른 이름으로 표기되게 하기.
 
       #여기서 특정이름을 정하고 그것을 list_filter에 넣고 그것의

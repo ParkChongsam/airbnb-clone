@@ -38,7 +38,8 @@ DJANGO_APPS =[
     'django.contrib.staticfiles',
 ]
 
-THIRD_PARTY_APPS = ["django-countries"]
+THIRD_PARTY_APPS = ["django_countries", "django_seed"]
+# https://github.com/Brobin/django-seed
 
 PROJECT_APPS = [
     "core.apps.CoreConfig",

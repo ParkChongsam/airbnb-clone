@@ -23,10 +23,10 @@ class User(AbstractUser):
         (LANGUAGE_KOREAN, "Korean"),
     )
 
-    CURRENCY_USD = "USD"
-    CURRENCY_KRW = "KRW"
+    CURRENCY_USD = "usd"
+    CURRENCY_KRW = "krw"
 
-    CURRENCY_CHOICES = ((CURRENCY_USD, "usd"), (CURRENCY_KRW, "krw"))
+    CURRENCY_CHOICES = ((CURRENCY_USD, "USD"), (CURRENCY_KRW, "KRW"))
 
     avatar = models.ImageField(upload_to = "avatars",null=True, blank=True)
     #uploads폴더내에서 avatar폴더를 만들어서 거기에 사진을 저장한다. 
