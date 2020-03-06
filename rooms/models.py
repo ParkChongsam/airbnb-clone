@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse  
 from django_countries.fields import CountryField
 from core import models as core_models
 from users import models as users_models
@@ -109,6 +110,11 @@ class Room(core_models.TimeStampModel):
       #       for review in all_reviews:
       #           print(review.rating_average())
       #       return 0
+
+      def get_absolute_url(self): #admin 에서 보여질 사이트로 바로가기버튼 만들기
+          return reverse("rooms:detail", kwargs = {"pk":self.pk})
+          #reverse는 url을 필요로하는 매서드이며 url을 반환한다.
+
 
       def total_rating(self): 
             all_reviews = self.reviews.all()

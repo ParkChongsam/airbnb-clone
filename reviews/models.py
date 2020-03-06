@@ -11,6 +11,7 @@ class Review(core_models.TimeStampModel):
       communication = models.IntegerField()
       cleanliness = models.IntegerField()
       location = models.IntegerField()
+      location = models.IntegerField()
       check_in = models.IntegerField()
       value = models.IntegerField()
       user = models.ForeignKey("users.User", related_name = "reviews", on_delete=models.CASCADE)
