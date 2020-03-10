@@ -3,10 +3,12 @@
 
 # from django.core.paginator import Paginator, EmptyPage
 # from django.utils import timezone
+# from django.http import Http404
 
-from django.views.generic import ListView
-from django.http import Http404
+
 from django.shortcuts import render
+from django_countries import countries
+from django.views.generic import ListView, DetailView
 from . import models
 
 #https://docs.djangoproject.com/en/3.0/topics/db/queries/
@@ -14,7 +16,6 @@ from . import models
 #class View https://docs.djangoproject.com/en/3.0/ref/class-based-views/
 
 class HomeView(ListView):
-
     """HomeView Definition"""
     model = models.Room
     #ListView이 속성을 아래사이트에서 다 볼 수 있다.  
@@ -26,20 +27,68 @@ class HomeView(ListView):
     #그래서 created을 사용할 수 있음.
     context_object_name = "rooms"
 
-def room_detail(request, pk): #여기서 pk를 potato라고 써도 된다.
-    #물론 rooms.urls.py 에서 <int:potato>라고 똑같이 써주면 된다. 
-    # print(pk)
-    try:
-        room = models.Room.objects.get(pk=pk)
-        return render(request, "rooms/detail.html", {"room":room})
-    except models.Room.DoesNotExist:
-        # return redirect(reverse("core:home")) #예외발생하는 경우 core:home 으로 가기
-        raise Http404()  #404페이지를 띄워라 
+
+class RoomDetail(DetailView):
+    """RoomDetail Definition"""
+    model = models.Room
+
+"""RoomDetail Definition based on function"""
+
+# def room_detail(request, pk): #여기서 pk를 potato라고 써도 된다.
+#     #물론 rooms.urls.py 에서 <int:potato>라고 똑같이 써주면 된다. 
+#     # print(pk)
+#     try:
+#         room = models.Room.objects.get(pk=pk)
+#         return render(request, "rooms/detail.html", {"room":room})
+#     except models.Room.DoesNotExist:
+#         # return redirect(reverse("core:home")) #예외발생하는 경우 core:home 으로 가기
+#         raise Http404()  #404페이지를 띄워라 
         #내가 원하는 문구가 나오에 하려면 templates 바로 밑에 404.html만 만들어 주면 된다.
         #이경우 settings.py를 아래와같이 바꾸어주어야함.
         # DEBUG = False
         # ALLOWED_HOSTS = "*"
+"""Search Definition based on function"""
+def search(request):
+    city = request.GET.get("city", "Anywhere") #디폴트는 Anywhere로 하기
+    city = str.capitalize(city)
+    country = request.GET.get("country", "KR") #디폴트는 KR로 하기
+    price = int(request.GET.get("price", 0))
+    guests = int(request.GET.get("guests", 0))
+    beds = int(request.GET.get("beds", 0))
+    baths = int(request.GET.get("baths", 0))
+    room_type = int(request.GET.get("room_type", 0)) #디폴트는 어떤 방이든 나오게 0으로 처리하기
+    instant = request.GET.get("instant", False)
+    super_host = request.GET.get("super_host", False)
+    s_amenities = request.GET.getlist("amenities") #amenity를 선택한 항목리스트
+    s_facilities = request.GET.getlist("facilities") #facility를 선택한 항목리스트
+    s_house_rules = request.GET.getlist("house_rules")
+    form = {"city":city,
+            "s_room_type": room_type,
+            "s_country":country,
+            "price":price, 
+            "guests":guests, 
+            "beds":beds, 
+            "baths":baths,
+            "s_amenities":s_amenities,
+            "s_facilities":s_facilities,
+            "s_house_rules":s_house_rules,
+            "instant":instant,
+            "super_host":super_host,
+    }
+    room_types = models.RoomType.objects.all()
+    amenities = models.Amenity.objects.all()
+    facilities = models.Facility.objects.all()
+    house_rules = models.HouseRule.objects.all()
+    choices ={
+        "countries":countries,
+        "room_types":room_types,
+        "amenities":amenities,
+        "facilities":facilities,
+        "house_rules":house_rules,
+    }
 
+    qs = models.Room.objects.filter()
+    return render(request, "rooms/search.html",{**form, **choices})
 
 
 
@@ -51,7 +100,7 @@ def room_detail(request, pk): #여기서 pk를 potato라고 써도 된다.
         #         context["now"] = now
         #         return context
 
-
+"""HomeView Definition based on function"""
 
 #아래 함수 이름 all_rooms이름은 core.urls.py 파일내의 
 #urlpatterns = [path("", room_views.all_rooms, name = "home")] 여기의
