@@ -58,7 +58,7 @@ def search(request):
     baths = int(request.GET.get("baths", 0))
     room_type = int(request.GET.get("room_type", 0)) #디폴트는 어떤 방이든 나오게 0으로 처리하기
     instant = request.GET.get("instant", False)
-    super_host = request.GET.get("super_host", False)
+    super_host = request.GET.get("super_host", False) #()안의 super_host는 search 에서 임의로 지정한 name = "super_host"의 이름을 넣어준다.
     s_amenities = request.GET.getlist("amenities") #amenity를 선택한 항목리스트
     s_facilities = request.GET.getlist("facilities") #facility를 선택한 항목리스트
     s_house_rules = request.GET.getlist("house_rules")
@@ -87,8 +87,41 @@ def search(request):
         "house_rules":house_rules,
     }
 
-    qs = models.Room.objects.filter()
-    return render(request, "rooms/search.html",{**form, **choices})
+    filter_args = {}
+
+    if city != "Anywhere":
+        filter_args["city__startswith"] = city
+    # print(filter_args)
+
+    filter_args["country"] = country
+
+    if room_type != 0:
+        filter_args["room_type__pk"] =room_type
+
+    if price != 0:
+        filter_args["price__lte"] = price
+    
+    if guests != 0:
+        filter_args["guest__gte"] = guests
+
+    if beds != 0:
+        filter_args["beds__gte"] = beds
+
+    if baths != 0:
+        filter_args["Baths__gte"] = baths
+    # print(bool(instant), bool(super_host))
+
+    if instant is True:
+        filter_args["instant_book"] = True
+
+    if super_host is True:
+        filter_args["host__superhost"] = True #rooms models에 super_host 불리언이 없으니
+        #ForeignKey키로 rooms의 host에서 user의 superhost로 연결해준다.
+
+
+    rooms = models.Room.objects.filter(**filter_args)
+
+    return render(request, "rooms/search.html",{**form, **choices, "rooms":rooms})
 
 
 
