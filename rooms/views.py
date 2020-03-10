@@ -118,6 +118,14 @@ def search(request):
         filter_args["host__superhost"] = True #rooms models에 super_host 불리언이 없으니
         #ForeignKey키로 rooms의 host에서 user의 superhost로 연결해준다.
 
+    if len(s_amenities) > 0:
+        for s_amenity in s_amenities:
+            filter_args["amenities__pk"] =  int(s_amenity)
+
+    if len(s_facilities) > 0:
+        for s_facility in s_facilities:
+            filter_args["facilities__pk"] =  int(s_facility)
+
 
     rooms = models.Room.objects.filter(**filter_args)
 
