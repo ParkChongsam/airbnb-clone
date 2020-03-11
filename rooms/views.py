@@ -8,8 +8,8 @@
 
 from django.shortcuts import render
 from django_countries import countries
-from django.views.generic import ListView, DetailView
-from . import models
+from django.views.generic import ListView, DetailView, View
+from . import models, forms
 
 #https://docs.djangoproject.com/en/3.0/topics/db/queries/
 
@@ -47,91 +47,245 @@ class RoomDetail(DetailView):
         #이경우 settings.py를 아래와같이 바꾸어주어야함.
         # DEBUG = False
         # ALLOWED_HOSTS = "*"
-"""Search Definition based on function"""
-def search(request):
-    city = request.GET.get("city", "Anywhere") #디폴트는 Anywhere로 하기
-    city = str.capitalize(city)
-    country = request.GET.get("country", "KR") #디폴트는 KR로 하기
-    price = int(request.GET.get("price", 0))
-    guests = int(request.GET.get("guests", 0))
-    beds = int(request.GET.get("beds", 0))
-    baths = int(request.GET.get("baths", 0))
-    room_type = int(request.GET.get("room_type", 0)) #디폴트는 어떤 방이든 나오게 0으로 처리하기
-    instant = request.GET.get("instant", False)
-    super_host = request.GET.get("super_host", False) #()안의 super_host는 search 에서 임의로 지정한 name = "super_host"의 이름을 넣어준다.
-    s_amenities = request.GET.getlist("amenities") #amenity를 선택한 항목리스트
-    s_facilities = request.GET.getlist("facilities") #facility를 선택한 항목리스트
-    s_house_rules = request.GET.getlist("house_rules")
-    form = {"city":city,
-            "s_room_type": room_type,
-            "s_country":country,
-            "price":price, 
-            "guests":guests, 
-            "beds":beds, 
-            "baths":baths,
-            "s_amenities":s_amenities,
-            "s_facilities":s_facilities,
-            "s_house_rules":s_house_rules,
-            "instant":instant,
-            "super_host":super_host,
-    }
-    room_types = models.RoomType.objects.all()
-    amenities = models.Amenity.objects.all()
-    facilities = models.Facility.objects.all()
-    house_rules = models.HouseRule.objects.all()
-    choices ={
-        "countries":countries,
-        "room_types":room_types,
-        "amenities":amenities,
-        "facilities":facilities,
-        "house_rules":house_rules,
-    }
 
-    filter_args = {}
+class SearchView(View):
 
-    if city != "Anywhere":
-        filter_args["city__startswith"] = city
-    # print(filter_args)
+    def get(self, request):
+        country = request.GET.get("country") #country 데이터 가져오기
 
-    filter_args["country"] = country
+        if country:
+            form = forms.SearchForm(request.GET) #request.GET 를 넣어서 선택한것을 기억하게 한다. 
+            
+            if form.is_valid(): #form에 에러가 없다면
 
-    if room_type != 0:
-        filter_args["room_type__pk"] =room_type
+                # print(form.cleaned_data) #form의 데이터를 출력해본다.
 
-    if price != 0:
-        filter_args["price__lte"] = price
+                city = form.cleaned_data.get("city")
+                country = form.cleaned_data.get("country")
+                room_type = form.cleaned_data.get("room_type")
+                price = form.cleaned_data.get("price")
+                guests = form.cleaned_data.get("guests")
+                beds = form.cleaned_data.get("beds")
+                baths = form.cleaned_data.get("baths")
+                instant_book = form.cleaned_data.get("instant_book")
+                superhost = form.cleaned_data.get("superhost")
+                amenities = form.cleaned_data.get("amenities")
+                facilities = form.cleaned_data.get("facilities")
+
+                # 아래는 필터링하는 부분
+
+                filter_args = {}
+
+                if city != "Anywhere":
+                    filter_args["city__startswith"] = city
+                # print(filter_args)
+
+                filter_args["country"] = country
+
+                if room_type is not None:
+                    filter_args["room_type"] =room_type
+
+                if price is not None:
+                    filter_args["price__lte"] = price
+                
+                if guests is not None:
+                    filter_args["guest__gte"] = guests
+
+                if beds is not None:
+                    filter_args["beds__gte"] = beds
+
+                if baths is not None:
+                    filter_args["Baths__gte"] = baths
+                # print(bool(instant), bool(super_host))
+
+                if instant_book is True:
+                    filter_args["instant_book"] = True
+
+                if superhost is True:
+                    filter_args["host__superhost"] = True #rooms models에 super_host 불리언이 없으니
+                    #ForeignKey키로 rooms의 host에서 user의 superhost로 연결해준다.
+
+                
+                for amenity in amenities:
+                    filter_args["amenities"] =  amenity
+
+                
+                for facility in facilities:
+                    filter_args["facilities"] =  facility
+
+                rooms = models.Room.objects.filter(**filter_args)
+
+                # 여기까지 필터링하는 부분
+        else:
+
+            form = forms.SearchForm()
+
+        return render(request, "rooms/search.html", {"form": form, "rooms": rooms})
     
-    if guests != 0:
-        filter_args["guest__gte"] = guests
 
-    if beds != 0:
-        filter_args["beds__gte"] = beds
-
-    if baths != 0:
-        filter_args["Baths__gte"] = baths
-    # print(bool(instant), bool(super_host))
-
-    if instant is True:
-        filter_args["instant_book"] = True
-
-    if super_host is True:
-        filter_args["host__superhost"] = True #rooms models에 super_host 불리언이 없으니
-        #ForeignKey키로 rooms의 host에서 user의 superhost로 연결해준다.
-
-    if len(s_amenities) > 0:
-        for s_amenity in s_amenities:
-            filter_args["amenities__pk"] =  int(s_amenity)
-
-    if len(s_facilities) > 0:
-        for s_facility in s_facilities:
-            filter_args["facilities__pk"] =  int(s_facility)
+# Search Field by function
+# def search(request):
 
 
-    rooms = models.Room.objects.filter(**filter_args)
+#     country = request.GET.get("country") #country 데이터 가져오기
+    
+#     if country:
+#         form = forms.SearchForm(request.GET) #request.GET 를 넣어서 선택한것을 기억하게 한다. 
+        
+#         if form.is_valid(): #form에 에러가 없다면
 
-    return render(request, "rooms/search.html",{**form, **choices, "rooms":rooms})
+#             # print(form.cleaned_data) #form의 데이터를 출력해본다.
+
+#             city = form.cleaned_data.get("city")
+#             country = form.cleaned_data.get("country")
+#             room_type = form.cleaned_data.get("room_type")
+#             price = form.cleaned_data.get("price")
+#             guests = form.cleaned_data.get("guests")
+#             beds = form.cleaned_data.get("beds")
+#             baths = form.cleaned_data.get("baths")
+#             instant_book = form.cleaned_data.get("instant_book")
+#             superhost = form.cleaned_data.get("superhost")
+#             amenities = form.cleaned_data.get("amenities")
+#             facilities = form.cleaned_data.get("facilities")
+
+#             # 아래는 필터링하는 부분
+
+#             filter_args = {}
+
+#             if city != "Anywhere":
+#                 filter_args["city__startswith"] = city
+#             # print(filter_args)
+
+#             filter_args["country"] = country
+
+#             if room_type is not None:
+#                 filter_args["room_type"] =room_type
+
+#             if price is not None:
+#                 filter_args["price__lte"] = price
+            
+#             if guests is not None:
+#                 filter_args["guest__gte"] = guests
+
+#             if beds is not None:
+#                 filter_args["beds__gte"] = beds
+
+#             if baths is not None:
+#                 filter_args["Baths__gte"] = baths
+#             # print(bool(instant), bool(super_host))
+
+#             if instant_book is True:
+#                 filter_args["instant_book"] = True
+
+#             if superhost is True:
+#                 filter_args["host__superhost"] = True #rooms models에 super_host 불리언이 없으니
+#                 #ForeignKey키로 rooms의 host에서 user의 superhost로 연결해준다.
+
+            
+#             for amenity in amenities:
+#                 filter_args["amenities"] =  amenity
+
+            
+#             for facility in facilities:
+#                 filter_args["facilities"] =  facility
+
+#             rooms = models.Room.objects.filter(**filter_args)
+
+#             # 여기까지 필터링하는 부분
+#     else:
+
+#         form = forms.SearchForm()
+
+#     return render(request, "rooms/search.html", {"form": form, "rooms": rooms})
 
 
+""" Search Definition based on function"""
+
+    # """ 파이썬으로 만든 Search """
+# def search(request):
+    # city = request.GET.get("city", "Anywhere") #디폴트는 Anywhere로 하기
+    # city = str.capitalize(city)
+    # country = request.GET.get("country", "KR") #디폴트는 KR로 하기
+    # price = int(request.GET.get("price", 0))
+    # guests = int(request.GET.get("guests", 0))
+    # beds = int(request.GET.get("beds", 0))
+    # baths = int(request.GET.get("baths", 0))
+    # room_type = int(request.GET.get("room_type", 0)) #디폴트는 어떤 방이든 나오게 0으로 처리하기
+    # instant = request.GET.get("instant", False)
+    # super_host = request.GET.get("super_host", False) #()안의 super_host는 search 에서 임의로 지정한 name = "super_host"의 이름을 넣어준다.
+    # s_amenities = request.GET.getlist("amenities") #amenity를 선택한 항목리스트
+    # s_facilities = request.GET.getlist("facilities") #facility를 선택한 항목리스트
+    # s_house_rules = request.GET.getlist("house_rules")
+    # form = {"city":city,
+    #         "s_room_type": room_type,
+    #         "s_country":country,
+    #         "price":price, 
+    #         "guests":guests, 
+    #         "beds":beds, 
+    #         "baths":baths,
+    #         "s_amenities":s_amenities,
+    #         "s_facilities":s_facilities,
+    #         "s_house_rules":s_house_rules,
+    #         "instant":instant,
+    #         "super_host":super_host,
+    # }
+    # room_types = models.RoomType.objects.all()
+    # amenities = models.Amenity.objects.all()
+    # facilities = models.Facility.objects.all()
+    # house_rules = models.HouseRule.objects.all()
+    # choices ={
+    #     "countries":countries,
+    #     "room_types":room_types,
+    #     "amenities":amenities,
+    #     "facilities":facilities,
+    #     "house_rules":house_rules,
+    # }
+
+    # filter_args = {}
+
+    # if city != "Anywhere":
+    #     filter_args["city__startswith"] = city
+    # # print(filter_args)
+
+    # filter_args["country"] = country
+
+    # if room_type != 0:
+    #     filter_args["room_type__pk"] =room_type
+
+    # if price != 0:
+    #     filter_args["price__lte"] = price
+    
+    # if guests != 0:
+    #     filter_args["guest__gte"] = guests
+
+    # if beds != 0:
+    #     filter_args["beds__gte"] = beds
+
+    # if baths != 0:
+    #     filter_args["Baths__gte"] = baths
+    # # print(bool(instant), bool(super_host))
+
+    # if instant is True:
+    #     filter_args["instant_book"] = True
+
+    # if super_host is True:
+    #     filter_args["host__superhost"] = True #rooms models에 super_host 불리언이 없으니
+    #     #ForeignKey키로 rooms의 host에서 user의 superhost로 연결해준다.
+
+    # if len(s_amenities) > 0:
+    #     for s_amenity in s_amenities:
+    #         filter_args["amenities__pk"] =  int(s_amenity)
+
+    # if len(s_facilities) > 0:
+    #     for s_facility in s_facilities:
+    #         filter_args["facilities__pk"] =  int(s_facility)
+
+
+    # rooms = models.Room.objects.filter(**filter_args)
+
+    # return render(request, "rooms/search.html",{**form, **choices, "rooms":rooms})
+
+""""여기까지 파이썬으로 만든 Search함수"""
 
         #아래처럼 Class View에 함수(funtion based view)를 추가 할 수도 있다.
 
