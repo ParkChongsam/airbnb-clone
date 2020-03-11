@@ -6,9 +6,10 @@
 # from django.http import Http404
 
 
-from django.shortcuts import render
-from django_countries import countries
 from django.views.generic import ListView, DetailView, View
+from django.shortcuts import render
+from django.core.paginator import Paginator
+from django_countries import countries
 from . import models, forms
 
 #https://docs.djangoproject.com/en/3.0/topics/db/queries/
@@ -89,13 +90,13 @@ class SearchView(View):
                     filter_args["price__lte"] = price
                 
                 if guests is not None:
-                    filter_args["guest__gte"] = guests
+                    filter_args["guests__gte"] = guests
 
                 if beds is not None:
                     filter_args["beds__gte"] = beds
 
                 if baths is not None:
-                    filter_args["Baths__gte"] = baths
+                    filter_args["baths__gte"] = baths
                 # print(bool(instant), bool(super_host))
 
                 if instant_book is True:
@@ -113,14 +114,25 @@ class SearchView(View):
                 for facility in facilities:
                     filter_args["facilities"] =  facility
 
-                rooms = models.Room.objects.filter(**filter_args)
+                qs = models.Room.objects.filter(**filter_args).order_by("-created")
+
+                paginator = Paginator(qs, 10, orphans=5)
+
+                page = request.GET.get("page", 1)
+
+                rooms = paginator.get_page(page)
+
+                return render(
+                    request, "rooms/search.html", {"form": form, "rooms":rooms},
+                )
 
                 # 여기까지 필터링하는 부분
         else:
 
             form = forms.SearchForm()
 
-        return render(request, "rooms/search.html", {"form": form, "rooms": rooms})
+            
+        return render(request, "rooms/search.html", {"form": form})
     
 
 # Search Field by function
