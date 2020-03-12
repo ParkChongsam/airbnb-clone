@@ -7,21 +7,24 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
     #widget=forms.PasswordInput - 패스워드가 * 표시로만 보이는 파라미터
 
-    def clean_email(self):  #존재하는 사용자인지 확인
-
+    def clean(self): #여기서 매서드 이름은 clean을 반드시 해준다. 
         email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
         try:
-            models.User.objects.get(username=email)
-            return email
+            user = models.User.objects.get(email=email)
+            if user.check_password(password):
+                # chck_password 패스워드 암호화
+                # https://docs.djangoproject.com/en/3.0/ref/contrib/auth/
+
+                # return password
+                return self.cleaned_data
+            else:
+                self.add_error("password", forms.ValidationError("Password is worng"))
 
         except models.User.DoesNotExist:
-            raise forms.ValidationError("User does not exist")
+            self.add_error("email", forms.ValidationError("User does not exist"))
 
-
-
-    def clean_password(self):
-       
-        return "jljljlkj"
+            # raise forms.ValidationError("User does not exist")
 
 
 
