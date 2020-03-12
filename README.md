@@ -1,1 +1,1 @@
-Validating Password
+Login, Logout, autheticating. 

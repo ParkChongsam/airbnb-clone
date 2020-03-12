@@ -1,3 +1,4 @@
+  
 {% extends "base.html" %}
 
 {% block page_title %}
@@ -8,11 +9,9 @@
 {% endblock search-bar %}
 
 {% block content %}
-
-    <form method = "POST" action ="{% url "users:login" %}" >
+    <form method="POST" action="{% url "users:login" %}">
         {% csrf_token %}
         {{form.as_p}}
         <button>Login</button>
     </form>
-
 {% endblock content %}
