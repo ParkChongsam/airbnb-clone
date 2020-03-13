@@ -1,3 +1,2 @@
-User 만들기.
-User 로그인 시키기
-계정을 만들면 자동으로 로그인되게 하기
+Model Form  : model에 연결된 Form
+ModelForm은 field의 유일한 값인지 확인해준다(validating)
