@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from . import models  
-#현재의 파일과 같은 폴더에 있는 models
+from . import models
+
+# 현재의 파일과 같은 폴더에 있는 models
 
 # Register your models here.
 @admin.register(models.User)
@@ -11,7 +12,7 @@ class CustomUserAdmin(UserAdmin):
         (
             "Custom Profile",
             {
-                "fields":(
+                "fields": (
                     "avatar",
                     "gender",
                     "bio",
@@ -19,7 +20,7 @@ class CustomUserAdmin(UserAdmin):
                     "currency",
                     "superhost",
                 )
-            }
+            },
         ),
     )
 
@@ -36,6 +37,8 @@ class CustomUserAdmin(UserAdmin):
         "superhost",
         "is_staff",
         "is_superuser",
+        "email_verified",
+        "email_secret",
     )
 
     # list_display = ("username", "superhost", "currency", "language", "gender")
