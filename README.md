@@ -1,2 +1,3 @@
-Model Form  : model에 연결된 Form
-ModelForm은 field의 유일한 값인지 확인해준다(validating)
+pipenv install djnago-dotenv 설치시 에러가 발생하여
+선생님께 문의를 해 놓았음.
+

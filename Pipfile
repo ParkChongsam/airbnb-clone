@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 flake8 = "*"
 black = "*"
+django-dotenv = "*"
 
 [packages]
 django = "==2.2.5"
@@ -13,6 +14,7 @@ pillow = "*"
 django-countries = "*"
 django-seed = "*"
 seed-users = "*"
+django-dotenv = "*"
 
 [requires]
 python_version = "3.7"
