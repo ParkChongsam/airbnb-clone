@@ -1,6 +1,8 @@
-email template를 따로 다른 폴더에 보관하여 model.py에 html을 작성하지 않아도 됨.
-reder_to_string 매서드를이요해서 불러와서 render해주면 됨.
+gulp 설치 및 tailwindcss 셋팅작업
+node.js설치 
+gulp 12.13.0 버전 설치
 
-현재 문제가 있음. Dotenv 설치가 제대로 안되서 그런것 같음.
+
+(airbnb-clone-JyVlJi3w) C:\project\airbnb-clone>npm i gulp gulp-postcss gulp-sass gulp-csso node-sass -D
 
 
