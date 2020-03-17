@@ -1,4 +1,4 @@
-const gulp = require("gulp");
+const gulp = require("gulp"); //gulp를 impot 하기
 
 const css = () => {
   const postCSS = require("gulp-postcss");

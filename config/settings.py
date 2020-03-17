@@ -125,7 +125,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = "/static/"  # url name 적기
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]  # 여기의 static는 폴더 이름이다.
+# 보통은 위의 url name과 같이 쓴다 헷갈리지 않게.
 
 AUTH_USER_MODEL = "users.User"
 
